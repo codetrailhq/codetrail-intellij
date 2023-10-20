@@ -14,13 +14,10 @@ import org.jetbrains.ide.RestService;
 import java.io.IOException;
 
 public class BuiltinServerRequestHandler extends RestService {
-    private static final Logger log = Logger.getInstance(AnnotateAction.class.getName());
+    private static final Logger log = Logger.getInstance(BuiltinServerRequestHandler.class.getName());
 
     public BuiltinServerRequestHandler() {
         super();
-
-        int port = BuiltInServerManager.getInstance().getPort();
-        log.debug("codetrail ide extension listening on localhost:" + port + "/api.codetrail");
     }
 
     @Nullable

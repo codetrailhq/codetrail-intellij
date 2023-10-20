@@ -27,6 +27,10 @@
     <httpRequestHandler implementation="io.codetrail.codetrailintellij.BuiltinServerRequestHandler" />
   </extensions>
 
+  <projectListeners>
+    <listener class="io.codetrail.codetrailintellij.ProjectManagerListener" topic="com.intellij.openapi.project.ProjectManagerListener" />
+  </projectListeners>
+
   <actions>
     <action
             id="CodeTrail.Annotate"

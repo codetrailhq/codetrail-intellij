@@ -45,3 +45,8 @@ tasks {
     token.set(System.getenv("PUBLISH_TOKEN"))
   }
 }
+
+dependencies {
+  implementation("org.apache.httpcomponents:httpclient:4.5.14")
+  implementation("org.json:json:20231013")
+}
