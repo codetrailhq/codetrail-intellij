@@ -10,7 +10,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.openapi.diagnostic.Logger;
 
 public class AnnotateAction extends AnAction {
-    private static final Logger log = Logger.getInstance(AnnotateAction.class);
+    private static final Logger log = Logger.getInstance(AnnotateAction.class.getName());
 
     @Override
     public void actionPerformed(AnActionEvent e) {
