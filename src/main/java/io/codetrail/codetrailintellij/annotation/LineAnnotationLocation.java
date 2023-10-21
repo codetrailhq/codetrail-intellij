@@ -4,7 +4,7 @@ public class LineAnnotationLocation extends AnnotationLocation {
     private String path;
     private int line;
 
-    LineAnnotationLocation(String path, int line) {
+    public LineAnnotationLocation(String path, int line) {
         this.path = path;
         this.line = line;
     }

@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.psi.PsiFile;
 import com.intellij.openapi.diagnostic.Logger;
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
+import io.codetrail.codetrailintellij.annotation.LineAnnotationLocation;
 import io.codetrail.codetrailintellij.annotation.RangeAnnotationLocation;
 
 public class AnnotateAction extends AnAction {
@@ -21,19 +22,24 @@ public class AnnotateAction extends AnAction {
         final Editor editor = e.getRequiredData(CommonDataKeys.EDITOR);
         CaretModel caretModel = editor.getCaretModel();
 
-        log.debug("****annotate opened****");
-        log.debug("currently in file " + file.getName());
-        log.debug("any carets " + caretModel.getCaretCount());
+        // we only support single caret annotations for now
+        // todo: think of how to handle if we have more than one caret
+        if (caretModel.getCaretCount() != 1) {
+            return;
+        }
 
         for (Caret caret: caretModel.getAllCarets()) {
-            log.debug("annotate in file " + file.getName() + " with code code " + caret.getSelectedText());
-
-            ExtensionService.getInstance();
-
             VisualPosition start = caret.getSelectionStartPosition();
             VisualPosition end = caret.getSelectionEndPosition();
 
-            AnnotationLocation location = new RangeAnnotationLocation(file.getName(), start.getLine(), start.getColumn(), end.getLine(), end.getColumn());
+            AnnotationLocation location = null;
+
+            if (start.getLine() == end.getLine() && start.getColumn() == end.getColumn()) {
+                // single line comment
+                location = new LineAnnotationLocation(file.getName(), start.getLine());
+            } else if (start.getLine() != end.getLine()) {
+                location = new RangeAnnotationLocation(file.getName(), start.getLine(), start.getColumn(), end.getLine(), end.getColumn());
+            }
 
             ExtensionService.getInstance().annotate(location, file.getVirtualFile().getPath(), caret.getSelectedText());
         }

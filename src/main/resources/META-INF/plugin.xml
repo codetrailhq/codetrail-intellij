@@ -38,6 +38,7 @@
             text="Annotate..."
             description="Add a new annotation with CodeTrail">
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift a"/>
     </action>
   </actions>
 </idea-plugin>
