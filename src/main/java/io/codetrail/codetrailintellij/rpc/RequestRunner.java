@@ -1,13 +1,24 @@
 package io.codetrail.codetrailintellij.rpc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.io.Charsets;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-public class RequestRunner implements Runnable {
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Callable;
+
+public class RequestRunner<T> implements Callable<T> {
     private RPCRequest request;
     private ConnectionConfiguration config;
 
@@ -17,7 +28,8 @@ public class RequestRunner implements Runnable {
     }
 
     @Override
-    public void run() {
+    @Nullable
+    public T call() {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost post = new HttpPost(config.getConnection());
 
@@ -33,8 +45,18 @@ public class RequestRunner implements Runnable {
 
         try {
             HttpResponse response = httpclient.execute(post);
-        } catch (Exception e) {
-            e.printStackTrace();
+            HttpEntity entity = response.getEntity();
+            Header encodingHeader = entity.getContentEncoding();
+
+            Charset encoding = encodingHeader == null ? StandardCharsets.UTF_8 :
+            Charsets.toCharset(encodingHeader.getValue());
+
+            String json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
+            ObjectMapper mapper = new ObjectMapper();
+
+            return (T) mapper.readValue(json, Object.class);
+        } catch (IOException e) {
+            return null;
         }
     }
 }

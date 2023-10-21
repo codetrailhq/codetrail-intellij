@@ -1,22 +1,19 @@
 package io.codetrail.codetrailintellij;
 
-import com.intellij.ide.DataManager;
-import com.intellij.openapi.actionSystem.DataConstants;
-import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.project.Project;
-import io.codetrail.codetrailintellij.rpc.ConnectIDERequestPayload;
-import io.codetrail.codetrailintellij.rpc.ConnectionConfiguration;
-import io.codetrail.codetrailintellij.rpc.RPCRequest;
-import io.codetrail.codetrailintellij.rpc.RequestRunner;
+import io.codetrail.codetrailintellij.rpc.*;
 import org.jetbrains.ide.BuiltInServerManager;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class ExtensionService {
     private static ExtensionService instance;
     private static final Logger log = Logger.getInstance(ExtensionService.class.getName());
 
     private boolean connectedToDesktop = false;
+    private String sessionId;
 
     public static ExtensionService getInstance() {
         if (instance == null) {
@@ -38,16 +35,38 @@ public class ExtensionService {
         RPCRequest req = new RPCRequest("connectIDE", new ConnectIDERequestPayload("", "intellij", port, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
-        RequestRunner runner = new RequestRunner(req, new ConnectionConfiguration("http://localhost", 31545));
-        Thread t = new Thread(runner);
-        t.start();
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        try {
-            t.join();
-            connectedToDesktop = true;
-            log.info("connected to desktop companion");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        int retries = 0;
+        while (retries < 5) {
+            retries++;
+
+            RequestRunner runner = new RequestRunner<RPCResponse<ConnectIDEResponse>>(req, new ConnectionConfiguration("http://localhost", 31545));
+            Future<RPCResponse<ConnectIDEResponse>> r = executorService.submit(runner);
+
+            try {
+                RPCResponse<ConnectIDEResponse> resp = r.get();
+
+                if (resp == null) {
+                    log.warn("failed to connect to desktop companion");
+                    continue;
+                }
+
+                String sessionId = resp.getData().getSessionId();
+                this.sessionId = sessionId;
+                this.connectedToDesktop = true;
+                log.info("connected to desktop companion!!!");
+                break;
+            } catch (InterruptedException e) {
+                log.warn("interrupted, failed to connect to desktop companion");
+            } catch (ExecutionException e) {
+                log.warn("could not connect to desktop companion, retrying");
+                log.warn(e);
+            }
+        }
+
+        executorService.shutdown();
+        if (!connectedToDesktop) {
             log.warn("failed to connect to desktop companion");
         }
     }
