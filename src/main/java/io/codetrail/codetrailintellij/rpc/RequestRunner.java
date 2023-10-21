@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
-public class RequestRunner<T> implements Callable<T> {
+public class RequestRunner implements Callable {
     private RPCRequest request;
     private ConnectionConfiguration config;
 
@@ -29,7 +29,7 @@ public class RequestRunner<T> implements Callable<T> {
 
     @Override
     @Nullable
-    public T call() {
+    public RPCResponse call() {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost post = new HttpPost(config.getConnection());
 
@@ -54,7 +54,7 @@ public class RequestRunner<T> implements Callable<T> {
             String json = EntityUtils.toString(entity, StandardCharsets.UTF_8);
             ObjectMapper mapper = new ObjectMapper();
 
-            return (T) mapper.readValue(json, Object.class);
+            return mapper.readValue(json, RPCResponse.class);
         } catch (IOException e) {
             return null;
         }

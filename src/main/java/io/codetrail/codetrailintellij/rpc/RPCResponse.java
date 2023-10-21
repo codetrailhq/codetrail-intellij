@@ -1,19 +1,40 @@
 package io.codetrail.codetrailintellij.rpc;
 
-public class RPCResponse<T> {
-    private String action;
-    private T data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-    public RPCResponse(String action, T data) {
-        this.action = action;
-        this.data = data;
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "action")
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = ConnectIDEResponse.class, name = "connectIDE"),
+})
+public abstract class RPCResponse {
+
+    public RPCResponse() {
     }
 
-    public String getAction() {
-        return action;
+    public abstract String getAction();
+
+    public abstract Object getData();
+
+    public abstract RPCResponseError getError();
+}
+
+class RPCResponseError {
+    private String code;
+    private String message;
+
+    public RPCResponseError(String code, String message) {
+        this.code = code;
+        this.message = message;
     }
 
-    public T getData() {
-        return data;
+    public String getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }

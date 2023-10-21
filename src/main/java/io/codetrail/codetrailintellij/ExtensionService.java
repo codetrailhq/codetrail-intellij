@@ -41,11 +41,11 @@ public class ExtensionService {
         while (retries < 5) {
             retries++;
 
-            RequestRunner runner = new RequestRunner<RPCResponse<ConnectIDEResponse>>(req, new ConnectionConfiguration("http://localhost", 31545));
-            Future<RPCResponse<ConnectIDEResponse>> r = executorService.submit(runner);
+            RequestRunner runner = new RequestRunner(req, new ConnectionConfiguration("http://localhost", 31545));
+            Future<ConnectIDEResponse> r = executorService.submit(runner);
 
             try {
-                RPCResponse<ConnectIDEResponse> resp = r.get();
+                ConnectIDEResponse resp = r.get();
 
                 if (resp == null) {
                     log.warn("failed to connect to desktop companion");
@@ -60,6 +60,9 @@ public class ExtensionService {
             } catch (InterruptedException e) {
                 log.warn("interrupted, failed to connect to desktop companion");
             } catch (ExecutionException e) {
+                log.warn("could not connect to desktop companion, retrying");
+                log.warn(e);
+            } catch (Exception e) {
                 log.warn("could not connect to desktop companion, retrying");
                 log.warn(e);
             }
