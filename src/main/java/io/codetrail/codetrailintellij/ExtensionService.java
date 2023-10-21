@@ -1,6 +1,8 @@
 package io.codetrail.codetrailintellij;
 
 import com.intellij.openapi.diagnostic.Logger;
+import io.codetrail.codetrailintellij.annotation.Annotation;
+import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
 import io.codetrail.codetrailintellij.rpc.*;
 import org.jetbrains.ide.BuiltInServerManager;
 import java.util.concurrent.ExecutionException;
@@ -14,6 +16,7 @@ public class ExtensionService {
 
     private boolean connectedToDesktop = false;
     private String sessionId;
+    private ConnectionConfiguration connection;
 
     public static ExtensionService getInstance() {
         if (instance == null) {
@@ -21,6 +24,26 @@ public class ExtensionService {
         }
 
         return instance;
+    }
+
+    public void annotate(AnnotationLocation location, String codebasePath, String selectedText) {
+        if (!connectedToDesktop) {
+            log.info("not connected to desktop companion");
+            return;
+        }
+
+        RPCRequest req = new RPCRequest("annotate", new AnnotateRequestPayload(sessionId, codebasePath, location, selectedText));
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        RequestRunner runner = new RequestRunner(req, connection);
+        Future<AnnotateResponse> r = executorService.submit(runner);
+
+        try {
+            AnnotateResponse resp = r.get();
+        } catch (Exception e) {
+            log.warn("failed to annotate");
+            log.warn(e);
+        }
     }
 
     public void activate(String projectPath) {
@@ -32,16 +55,18 @@ public class ExtensionService {
 
     private void connectToDesktop(String projectPath) {
         int port = BuiltInServerManager.getInstance().getPort();
-        RPCRequest req = new RPCRequest("connectIDE", new ConnectIDERequestPayload("", "intellij", port, projectPath));
+        RPCRequest req = new RPCRequest("connectIDE", new ConnectIDERequestPayload("my-own-session", "intellij", port, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        connection = new ConnectionConfiguration("http://localhost", 31545);
 
         int retries = 0;
         while (retries < 5) {
             retries++;
 
-            RequestRunner runner = new RequestRunner(req, new ConnectionConfiguration("http://localhost", 31545));
+            RequestRunner runner = new RequestRunner(req, connection);
             Future<ConnectIDEResponse> r = executorService.submit(runner);
 
             try {

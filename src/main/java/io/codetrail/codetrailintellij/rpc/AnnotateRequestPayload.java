@@ -8,7 +8,7 @@ public class AnnotateRequestPayload {
     private AnnotationLocation location;
     private String selectedText;
 
-    AnnotateRequestPayload(String sessionId, String codebasePath, AnnotationLocation location, String selectedText) {
+    public AnnotateRequestPayload(String sessionId, String codebasePath, AnnotationLocation location, String selectedText) {
         this.sessionId = sessionId;
         this.codebasePath = codebasePath;
         this.location = location;
