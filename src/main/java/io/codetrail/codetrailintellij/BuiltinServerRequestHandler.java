@@ -11,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.ide.BuiltInServerManager;
 import org.jetbrains.ide.RestService;
 
+import com.intellij.util.ui.JBUI;
+
 import java.io.IOException;
 
 public class BuiltinServerRequestHandler extends RestService {
