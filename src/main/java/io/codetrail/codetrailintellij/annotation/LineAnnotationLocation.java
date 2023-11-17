@@ -21,4 +21,6 @@ public class LineAnnotationLocation extends AnnotationLocation {
     String kind() {
         return "line";
     }
+
+    String getKind() { return kind(); }
 }

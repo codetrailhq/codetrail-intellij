@@ -1,9 +1,14 @@
 package io.codetrail.codetrailintellij;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.project.Project;
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
 import io.codetrail.codetrailintellij.rpc.*;
 import org.jetbrains.ide.BuiltInServerManager;
+import com.intellij.openapi.ui.Messages;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,6 +27,8 @@ public class ExtensionService {
 
     private static int IDE_PING_INTERVAL = 1000 * 5;
 
+    private Project currentProject;
+
     public static ExtensionService getInstance() {
         if (instance == null) {
             instance = new ExtensionService();
@@ -33,6 +40,7 @@ public class ExtensionService {
     public void annotate(AnnotationLocation location, String codebasePath, String selectedText) {
         if (!connectedToDesktop) {
             log.info("not connected to desktop companion");
+            dialogWithWarning("Not connected to desktop companion", "Please start CodeTrail before writing an annotation!");
             return;
         }
 
@@ -44,18 +52,26 @@ public class ExtensionService {
 
         try {
             AnnotateResponse resp = r.get();
+
+            if (resp == null) {
+                log.warn("AnnotateResponse is null");
+            } else if (resp.getError() != null) {
+                log.warn("could not annotate due to error");
+            }
         } catch (Exception e) {
             log.warn("failed to annotate");
             log.warn(e);
         }
     }
 
-    public void activate(String projectPath) {
+    public void activate(Project project, String projectPath) {
         if (!connectedToDesktop) {
             log.info("not connected to desktop companion, trying to connect");
             connectToDesktop(projectPath);
             stayConnectedToDesktop(projectPath);
         }
+
+        currentProject = project;
     }
 
     /**
@@ -116,6 +132,19 @@ public class ExtensionService {
         executorService.shutdown();
         if (!connectedToDesktop) {
             log.warn("failed to connect to desktop companion");
+            notifyWithWarning("Could not connect", "Could not connect to the desktop companion!");
         }
+    }
+
+    private void notifyWithWarning(String title, String message) {
+        Notification notification = new Notification("io.codetrail.codetrail-intellij",
+                title,
+                message,
+                NotificationType.WARNING);
+        Notifications.Bus.notify(notification, currentProject);
+    }
+
+    private void dialogWithWarning(String title, String message) {
+        Messages.showWarningDialog(currentProject, message, title);
     }
 }

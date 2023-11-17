@@ -39,4 +39,6 @@ public class RangeAnnotationLocation extends AnnotationLocation {
     String kind() {
         return "range";
     }
+
+    String getKind() { return kind(); }
 }

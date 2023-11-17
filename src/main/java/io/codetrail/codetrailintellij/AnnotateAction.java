@@ -41,6 +41,12 @@ public class AnnotateAction extends AnAction {
                 location = new RangeAnnotationLocation(file.getName(), start.getLine(), start.getColumn(), end.getLine(), end.getColumn());
             }
 
+            if (location == null) {
+                log.error("location is null, something is wrong with the selection");
+                // fixme: what happens when location is null at this point?
+                return;
+            }
+
             ExtensionService.getInstance().annotate(location, file.getVirtualFile().getPath(), caret.getSelectedText());
         }
     }

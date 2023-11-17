@@ -1,6 +1,8 @@
 package io.codetrail.codetrailintellij.rpc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.apache.commons.io.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -33,10 +35,17 @@ public class RequestRunner implements Callable {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost post = new HttpPost(config.getConnection());
 
-        JSONObject obj = new JSONObject(request);
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String requestJson = null;
+
+        try {
+            requestJson = ow.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         StringEntity requestEntity = new StringEntity(
-            obj.toString(),
+            requestJson,
             "UTF-8"
         );
 
