@@ -12,7 +12,7 @@ public class DirectoryAnnotationLocation extends AnnotationLocation {
     }
 
     @Override
-    String kind() {
+    String getKind() {
         return "directory";
     }
 }

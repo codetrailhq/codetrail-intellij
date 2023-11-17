@@ -12,7 +12,7 @@ public class FileAnnotationLocation extends AnnotationLocation {
     }
 
     @Override
-    String kind() {
+    String getKind() {
         return "file";
     }
 }

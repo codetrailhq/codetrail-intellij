@@ -7,6 +7,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
 import io.codetrail.codetrailintellij.rpc.*;
+import io.codetrail.codetrailintellij.rpc.requests.*;
 import org.jetbrains.ide.BuiltInServerManager;
 import com.intellij.openapi.ui.Messages;
 
@@ -44,7 +45,7 @@ public class ExtensionService {
             return;
         }
 
-        RPCRequest req = new RPCRequest("annotate", new AnnotateRequestPayload(sessionId, codebasePath, location, selectedText));
+        RPCRequest req = new AnnotateRequest(new AnnotateRequestPayload(sessionId, codebasePath, location, selectedText));
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         RequestRunner runner = new RequestRunner(req, connection);
@@ -91,7 +92,7 @@ public class ExtensionService {
 
     private void connectToDesktop(String projectPath) {
         int port = BuiltInServerManager.getInstance().getPort();
-        RPCRequest req = new RPCRequest("ide_ping", new IDEPingRequestPayload("my-own-session", "intellij", port, projectPath));
+        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "intellij", port, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();

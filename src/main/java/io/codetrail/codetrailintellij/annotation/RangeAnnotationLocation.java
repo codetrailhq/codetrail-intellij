@@ -15,30 +15,51 @@ public class RangeAnnotationLocation extends AnnotationLocation {
         this.endCharacter = endCharacter;
     }
 
-    String getPath() {
+    public RangeAnnotationLocation() {
+    }
+
+    public String getPath() {
         return path;
     }
 
-    int getStartLine() {
+    void setPath(String path) {
+        this.path = path;
+    }
+
+    public int getStartLine() {
         return startLine;
     }
 
-    int getStartCharacter() {
+    void setStartLine(int startLine) {
+        this.startLine = startLine;
+    }
+
+    public int getStartCharacter() {
         return startCharacter;
     }
 
-    int getEndLine() {
+    void setStartCharacter(int startCharacter) {
+        this.startCharacter = startCharacter;
+    }
+
+    public int getEndLine() {
         return endLine;
     }
 
-    int getEndCharacter() {
+    void setEndLine(int endLine) {
+        this.endLine = endLine;
+    }
+
+    public int getEndCharacter() {
         return endCharacter;
     }
 
-    @Override
-    String kind() {
-        return "range";
+    void setEndCharacter(int endCharacter) {
+        this.endCharacter = endCharacter;
     }
 
-    String getKind() { return kind(); }
+    @Override
+    String getKind() {
+        return "range";
+    }
 }

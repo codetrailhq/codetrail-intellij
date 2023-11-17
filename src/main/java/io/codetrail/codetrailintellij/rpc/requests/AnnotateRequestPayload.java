@@ -1,4 +1,4 @@
-package io.codetrail.codetrailintellij.rpc;
+package io.codetrail.codetrailintellij.rpc.requests;
 
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
 

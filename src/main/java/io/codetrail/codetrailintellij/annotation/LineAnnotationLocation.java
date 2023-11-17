@@ -18,9 +18,7 @@ public class LineAnnotationLocation extends AnnotationLocation {
     }
 
     @Override
-    String kind() {
+    String getKind() {
         return "line";
     }
-
-    String getKind() { return kind(); }
 }
