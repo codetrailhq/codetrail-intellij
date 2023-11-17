@@ -6,6 +6,7 @@ import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
+import io.codetrail.codetrailintellij.annotation.AnnotationSelectedText;
 import io.codetrail.codetrailintellij.rpc.*;
 import io.codetrail.codetrailintellij.rpc.requests.*;
 import org.jetbrains.ide.BuiltInServerManager;
@@ -38,7 +39,7 @@ public class ExtensionService {
         return instance;
     }
 
-    public void annotate(AnnotationLocation location, String codebasePath, String selectedText) {
+    public void annotate(AnnotationLocation location, String codebasePath, AnnotationSelectedText selectedText) {
         if (!connectedToDesktop) {
             log.info("not connected to desktop companion");
             dialogWithWarning("Not connected to desktop companion", "Please start CodeTrail before writing an annotation!");

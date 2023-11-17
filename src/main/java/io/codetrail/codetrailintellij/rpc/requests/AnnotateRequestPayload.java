@@ -1,14 +1,15 @@
 package io.codetrail.codetrailintellij.rpc.requests;
 
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
+import io.codetrail.codetrailintellij.annotation.AnnotationSelectedText;
 
 public class AnnotateRequestPayload {
     private String sessionId;
     private String codebasePath;
     private AnnotationLocation location;
-    private String selectedText;
+    private AnnotationSelectedText selectedText;
 
-    public AnnotateRequestPayload(String sessionId, String codebasePath, AnnotationLocation location, String selectedText) {
+    public AnnotateRequestPayload(String sessionId, String codebasePath, AnnotationLocation location, AnnotationSelectedText selectedText) {
         this.sessionId = sessionId;
         this.codebasePath = codebasePath;
         this.location = location;
@@ -27,7 +28,7 @@ public class AnnotateRequestPayload {
         return location;
     }
 
-    public String getSelectedText() {
+    public AnnotationSelectedText getSelectedText() {
         return selectedText;
     }
 }
