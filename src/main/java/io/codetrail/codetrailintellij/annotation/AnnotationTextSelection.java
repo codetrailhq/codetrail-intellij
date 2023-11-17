@@ -1,22 +1,22 @@
 package io.codetrail.codetrailintellij.annotation;
 
 public class AnnotationTextSelection {
-    private String path;
+    private String code;
     private int startLine;
     private int startCharacter;
     private int endLine;
     private int endCharacter;
 
-    public AnnotationTextSelection(String path, int startLine, int startCharacter, int endLine, int endCharacter) {
-        this.path = path;
+    public AnnotationTextSelection(String code, int startLine, int startCharacter, int endLine, int endCharacter) {
+        this.code = code;
         this.startLine = startLine;
         this.startCharacter = startCharacter;
         this.endLine = endLine;
         this.endCharacter = endCharacter;
     }
 
-    public String getPath() {
-        return path;
+    public String getCode() {
+        return code;
     }
 
     public int getStartLine() {

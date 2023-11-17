@@ -61,10 +61,11 @@ public class AnnotateAction extends AnAction {
 
         int lineSnippetBefore = Math.max(0, start.getLine() - SNIPPET_LINES_BEFORE);
         int lineSnippetAfter = Math.min(document.getLineCount() - 1, end.getLine() + SNIPPET_LINES_AFTER);
-        String code = document.getText(new TextRange(document.getLineStartOffset(lineSnippetBefore), document.getLineStartOffset(lineSnippetAfter)));
+        String snippetCode = document.getText(new TextRange(document.getLineStartOffset(lineSnippetBefore), document.getLineStartOffset(lineSnippetAfter)));
+        AnnotationSnippet snippet = new AnnotationSnippet(lineSnippetBefore + 1, lineSnippetAfter + 1, snippetCode);
 
-        AnnotationSnippet snippet = new AnnotationSnippet(lineSnippetBefore + 1, lineSnippetAfter + 1, code);
+        String selectedText = document.getText(new TextRange(caret.getSelectionStart(), caret.getSelectionEnd()));
 
-        return new AnnotationSelectedText(snippet, new AnnotationTextSelection(file.getName(), start.getLine(), start.getColumn(), end.getLine(), end.getColumn()));
+        return new AnnotationSelectedText(snippet, new AnnotationTextSelection(selectedText, start.getLine(), start.getColumn(), end.getLine(), end.getColumn()));
     }
 }
