@@ -3,10 +3,8 @@ package io.codetrail.codetrailintellij;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.editor.Caret;
-import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.VisualPosition;
+import com.intellij.openapi.editor.*;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.openapi.diagnostic.Logger;
 import io.codetrail.codetrailintellij.annotation.*;
@@ -31,7 +29,7 @@ public class AnnotateAction extends AnAction {
 
         for (Caret caret: caretModel.getAllCarets()) {
             AnnotationLocation location = getLocation(caret, file);
-            AnnotationSelectedText selectedText = getSelectedText(caret, file);
+            AnnotationSelectedText selectedText = getSelectedText(caret, file, editor.getDocument());
             String containingDirectory = file.getVirtualFile().getParent().getPath();
 
             ExtensionService.getInstance().annotate(location, containingDirectory, selectedText);
@@ -42,33 +40,28 @@ public class AnnotateAction extends AnAction {
         VisualPosition start = caret.getSelectionStartPosition();
         VisualPosition end = caret.getSelectionEndPosition();
 
-        AnnotationLocation location = null;
-
         if (start.getLine() == end.getLine() && start.getColumn() == end.getColumn()) {
             // single line comment
-            location = new LineAnnotationLocation(file.getName(), start.getLine());
+            return new LineAnnotationLocation(file.getName(), start.getLine());
         } else if (start.getLine() != end.getLine() || start.getColumn() != end.getColumn()) {
             // selection within line or multiline selection
-            location = new RangeAnnotationLocation(file.getName(), start.getLine(), start.getColumn(), end.getLine(), end.getColumn());
-        } else {
-            // could not establish matching location, so we'll fail here
-            log.error("location is null, something is wrong with the selection");
-            // fixme: what happens when location is null at this point?
-            return null;
+            return new RangeAnnotationLocation(file.getName(), start.getLine(), start.getColumn(), end.getLine(), end.getColumn());
         }
 
-        return location;
+        // could not establish matching location, so we'll fail here
+        log.error("location is null, something is wrong with the selection");
+
+        // fixme: what happens when location is null?
+        return null;
     }
 
-    private AnnotationSelectedText getSelectedText(Caret caret, PsiFile file) {
+    private AnnotationSelectedText getSelectedText(Caret caret, PsiFile file, Document document) {
         VisualPosition start = caret.getSelectionStartPosition();
         VisualPosition end = caret.getSelectionEndPosition();
 
-        // fixme: this does not actually return the correct selected text
-
         int lineSnippetBefore = Math.max(0, start.getLine() - SNIPPET_LINES_BEFORE);
-        int lineSnippetAfter = (int) Math.min(file.getVirtualFile().getLength(), end.getLine() + SNIPPET_LINES_AFTER);
-        String code = file.getText().substring(lineSnippetBefore, lineSnippetAfter);
+        int lineSnippetAfter = Math.min(document.getLineCount() - 1, end.getLine() + SNIPPET_LINES_AFTER);
+        String code = document.getText(new TextRange(document.getLineStartOffset(lineSnippetBefore), document.getLineStartOffset(lineSnippetAfter)));
 
         AnnotationSnippet snippet = new AnnotationSnippet(lineSnippetBefore + 1, lineSnippetAfter + 1, code);
 
