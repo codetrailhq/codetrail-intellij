@@ -7,7 +7,7 @@ public class FileAnnotationLocation extends AnnotationLocation {
         this.path = path;
     }
 
-    String getPath() {
+    public String getPath() {
         return path;
     }
 

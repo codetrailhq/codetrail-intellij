@@ -47,7 +47,7 @@ public class AnnotateAction extends AnAction {
                 return;
             }
 
-            ExtensionService.getInstance().annotate(location, file.getVirtualFile().getPath(), caret.getSelectedText());
+            ExtensionService.getInstance().annotate(location, file.getContainingDirectory().getName(), caret.getSelectedText());
         }
     }
 }

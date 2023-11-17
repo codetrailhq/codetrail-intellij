@@ -44,6 +44,7 @@ public class RequestRunner implements Callable {
             throw new RuntimeException(e);
         }
 
+        // attention: for any payloads, make sure that all fields are **public** and **have getters**! otherwise, they'll not get serialized
         StringEntity requestEntity = new StringEntity(
             requestJson,
             "UTF-8"
