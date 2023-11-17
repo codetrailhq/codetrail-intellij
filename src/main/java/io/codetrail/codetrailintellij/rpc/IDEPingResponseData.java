@@ -1,9 +1,9 @@
 package io.codetrail.codetrailintellij.rpc;
 
-public class ConnectIDEResponseData {
+public class IDEPingResponseData {
     private String sessionId;
 
-    public ConnectIDEResponseData() {}
+    public IDEPingResponseData() {}
 
     public String getSessionId() {
         return sessionId;

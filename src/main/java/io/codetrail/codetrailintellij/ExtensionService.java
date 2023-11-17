@@ -1,10 +1,12 @@
 package io.codetrail.codetrailintellij;
 
 import com.intellij.openapi.diagnostic.Logger;
-import io.codetrail.codetrailintellij.annotation.Annotation;
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
 import io.codetrail.codetrailintellij.rpc.*;
 import org.jetbrains.ide.BuiltInServerManager;
+
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +19,8 @@ public class ExtensionService {
     private boolean connectedToDesktop = false;
     private String sessionId;
     private ConnectionConfiguration connection;
+
+    private static int IDE_PING_INTERVAL = 1000 * 5;
 
     public static ExtensionService getInstance() {
         if (instance == null) {
@@ -50,12 +54,28 @@ public class ExtensionService {
         if (!connectedToDesktop) {
             log.info("not connected to desktop companion, trying to connect");
             connectToDesktop(projectPath);
+            stayConnectedToDesktop(projectPath);
         }
+    }
+
+    /**
+     * We need to keep sending ide_ping to desktop companion to keep the connection alive.
+     * FIXME: this needs to be more stable, the desktop companion could be quit at any time
+     * @param projectPath
+     */
+    private void stayConnectedToDesktop(String projectPath) {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override public void run() {
+                log.info("sending ide_ping to desktop companion");
+                connectToDesktop(projectPath);
+            }
+        }, IDE_PING_INTERVAL, IDE_PING_INTERVAL);
     }
 
     private void connectToDesktop(String projectPath) {
         int port = BuiltInServerManager.getInstance().getPort();
-        RPCRequest req = new RPCRequest("connectIDE", new ConnectIDERequestPayload("my-own-session", "intellij", port, projectPath));
+        RPCRequest req = new RPCRequest("ide_ping", new IDEPingRequestPayload("my-own-session", "intellij", port, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -67,10 +87,10 @@ public class ExtensionService {
             retries++;
 
             RequestRunner runner = new RequestRunner(req, connection);
-            Future<ConnectIDEResponse> r = executorService.submit(runner);
+            Future<IDEPingResponse> r = executorService.submit(runner);
 
             try {
-                ConnectIDEResponse resp = r.get();
+                IDEPingResponse resp = r.get();
 
                 if (resp == null) {
                     log.warn("failed to connect to desktop companion");
