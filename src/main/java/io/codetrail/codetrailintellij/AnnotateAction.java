@@ -65,7 +65,12 @@ public class AnnotateAction extends AnAction {
         AnnotationSnippet snippet = new AnnotationSnippet(lineSnippetBefore + 1, lineSnippetAfter + 1, snippetCode);
 
         String selectedText = document.getText(new TextRange(caret.getSelectionStart(), caret.getSelectionEnd()));
+        // fixme: this needs to be normalized, also IntelliJ does sometimes not recognize the language correctly
+        String language = file.getLanguage().getID().toLowerCase();
 
-        return new AnnotationSelectedText(snippet, new AnnotationTextSelection(selectedText, start.getLine(), start.getColumn(), end.getLine(), end.getColumn()));
+        // todo: determine closest symbol
+        AnnotationSymbol symbol = null;
+
+        return new AnnotationSelectedText(snippet, new AnnotationTextSelection(selectedText, start.getLine(), start.getColumn(), end.getLine(), end.getColumn()), symbol, language);
     }
 }
