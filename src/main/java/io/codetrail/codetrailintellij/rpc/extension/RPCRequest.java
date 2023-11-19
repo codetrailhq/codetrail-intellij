@@ -1,10 +1,8 @@
-package io.codetrail.codetrailintellij.rpc.requests;
+package io.codetrail.codetrailintellij.rpc.extension;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import io.codetrail.codetrailintellij.rpc.AnnotateResponse;
-import io.codetrail.codetrailintellij.rpc.IDEPingResponse;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "action")

@@ -1,4 +1,4 @@
-package io.codetrail.codetrailintellij.rpc;
+package io.codetrail.codetrailintellij.rpc.extension;
 
 public class DisconnectIDERequestPayload {
     private String sessionId;

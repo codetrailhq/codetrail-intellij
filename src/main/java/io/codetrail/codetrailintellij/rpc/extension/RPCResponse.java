@@ -1,4 +1,4 @@
-package io.codetrail.codetrailintellij.rpc;
+package io.codetrail.codetrailintellij.rpc.extension;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -22,20 +22,3 @@ public abstract class RPCResponse {
     public abstract RPCResponseError getError();
 }
 
-class RPCResponseError {
-    private String code;
-    private String message;
-
-    public RPCResponseError(String code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-}

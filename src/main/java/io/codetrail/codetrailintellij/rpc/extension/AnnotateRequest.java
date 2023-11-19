@@ -1,4 +1,4 @@
-package io.codetrail.codetrailintellij.rpc.requests;
+package io.codetrail.codetrailintellij.rpc.extension;
 
 public class AnnotateRequest extends RPCRequest {
     private AnnotateRequestPayload payload;

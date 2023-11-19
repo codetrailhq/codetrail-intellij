@@ -5,12 +5,12 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
 import io.codetrail.codetrailintellij.annotation.AnnotationSelectedText;
-import io.codetrail.codetrailintellij.rpc.*;
-import io.codetrail.codetrailintellij.rpc.requests.*;
+import io.codetrail.codetrailintellij.rpc.ConnectionConfiguration;
+import io.codetrail.codetrailintellij.rpc.extension.*;
 import org.jetbrains.ide.BuiltInServerManager;
-import com.intellij.openapi.ui.Messages;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,6 +30,8 @@ public class ExtensionService {
     private static int IDE_PING_INTERVAL = 1000 * 5;
 
     private Project currentProject;
+
+    private boolean isEditing = false;
 
     public static ExtensionService getInstance() {
         if (instance == null) {
@@ -51,6 +53,8 @@ public class ExtensionService {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         RequestRunner runner = new RequestRunner(req, connection);
         Future<AnnotateResponse> r = executorService.submit(runner);
+
+        isEditing = true;
 
         try {
             AnnotateResponse resp = r.get();

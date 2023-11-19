@@ -1,9 +1,9 @@
-package io.codetrail.codetrailintellij.rpc;
+package io.codetrail.codetrailintellij.rpc.extension;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import io.codetrail.codetrailintellij.rpc.requests.RPCRequest;
+import io.codetrail.codetrailintellij.rpc.ConnectionConfiguration;
 import org.apache.commons.io.Charsets;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;

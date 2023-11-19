@@ -1,4 +1,4 @@
-package io.codetrail.codetrailintellij.rpc.requests;
+package io.codetrail.codetrailintellij.rpc.extension;
 
 public class IDEPingRequestPayload {
     private String sessionId;
