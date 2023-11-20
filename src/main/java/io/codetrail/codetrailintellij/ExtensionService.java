@@ -115,7 +115,8 @@ public class ExtensionService {
                 IDEPingResponse resp = r.get();
 
                 if (resp == null) {
-                    log.warn("failed to connect to desktop companion");
+                    log.warn("failed to connect to desktop companion (empty response), retrying");
+                    connectedToDesktop = false;
                     continue;
                 }
 
@@ -126,11 +127,12 @@ public class ExtensionService {
                 break;
             } catch (InterruptedException e) {
                 log.warn("interrupted, failed to connect to desktop companion");
+                break;
             } catch (ExecutionException e) {
-                log.warn("could not connect to desktop companion, retrying");
+                log.warn("execution whatever, could not connect to desktop companion, retrying");
                 log.warn(e);
             } catch (Exception e) {
-                log.warn("could not connect to desktop companion, retrying");
+                log.warn("general exception, could not connect to desktop companion, retrying");
                 log.warn(e);
             }
         }
