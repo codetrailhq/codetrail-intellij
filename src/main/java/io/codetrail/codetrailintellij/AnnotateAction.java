@@ -42,10 +42,10 @@ public class AnnotateAction extends AnAction {
 
         if (start.getLine() == end.getLine() && start.getColumn() == end.getColumn()) {
             // single line comment
-            return new LineAnnotationLocation(file.getName(), start.getLine());
+            return new LineAnnotationLocation(file.getName(), start.getLine() + 1);
         } else if (start.getLine() != end.getLine() || start.getColumn() != end.getColumn()) {
             // selection within line or multiline selection
-            return new RangeAnnotationLocation(file.getName(), start.getLine(), start.getColumn(), end.getLine(), end.getColumn());
+            return new RangeAnnotationLocation(file.getName(), start.getLine() + 1, start.getColumn(), end.getLine() + 1, end.getColumn());
         }
 
         // could not establish matching location, so we'll fail here
@@ -71,6 +71,6 @@ public class AnnotateAction extends AnAction {
         // todo: determine closest symbol
         AnnotationSymbol symbol = null;
 
-        return new AnnotationSelectedText(snippet, new AnnotationTextSelection(selectedText, start.getLine(), start.getColumn(), end.getLine(), end.getColumn()), symbol, language);
+        return new AnnotationSelectedText(snippet, new AnnotationTextSelection(selectedText, start.getLine() + 1, start.getColumn(), end.getLine() + 1, end.getColumn()), symbol, language);
     }
 }

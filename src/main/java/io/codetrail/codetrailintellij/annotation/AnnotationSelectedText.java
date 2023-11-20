@@ -4,15 +4,15 @@ import javax.annotation.Nullable;
 
 public class AnnotationSelectedText {
     private AnnotationSnippet snippet;
-    private AnnotationTextSelection selection;
+    private AnnotationTextSelection selected;
 
     private AnnotationSymbol symbol;
 
     private String language;
 
-    public AnnotationSelectedText(AnnotationSnippet snippet, AnnotationTextSelection selection, AnnotationSymbol symbol, String language) {
+    public AnnotationSelectedText(AnnotationSnippet snippet, AnnotationTextSelection selected, AnnotationSymbol symbol, String language) {
         this.snippet = snippet;
-        this.selection = selection;
+        this.selected = selected;
         this.symbol = symbol;
     }
 
@@ -20,8 +20,8 @@ public class AnnotationSelectedText {
         return snippet;
     }
 
-    public AnnotationTextSelection getSelection() {
-        return selection;
+    public AnnotationTextSelection getSelected() {
+        return selected;
     }
 
     @Nullable
