@@ -16,6 +16,10 @@ public class AnnotationSelectedText {
         this.symbol = symbol;
     }
 
+    public AnnotationSelectedText() {
+
+    }
+
     public AnnotationSnippet getSnippet() {
         return snippet;
     }
@@ -36,5 +40,17 @@ public class AnnotationSelectedText {
     private void setLanguage(String language) {
         // todo: validate that the language is valid
         this.language = language;
+    }
+
+    public void setSnippet(AnnotationSnippet snippet) {
+        this.snippet = snippet;
+    }
+
+    public void setSelected(AnnotationTextSelection selected) {
+        this.selected = selected;
+    }
+
+    public void setSymbol(AnnotationSymbol symbol) {
+        this.symbol = symbol;
     }
 }

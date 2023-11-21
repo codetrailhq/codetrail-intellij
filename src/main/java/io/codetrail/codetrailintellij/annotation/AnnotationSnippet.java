@@ -12,6 +12,10 @@ public class AnnotationSnippet {
         this.code = code;
     }
 
+    public AnnotationSnippet() {
+
+    }
+
     public int getStartLine() {
         return startLine;
     }
@@ -22,5 +26,17 @@ public class AnnotationSnippet {
 
     public String getCode() {
         return code;
+    }
+
+    public void setStartLine(int startLine) {
+        this.startLine = startLine;
+    }
+
+    public void setEndLine(int endLine) {
+        this.endLine = endLine;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

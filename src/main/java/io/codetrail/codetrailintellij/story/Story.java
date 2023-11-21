@@ -1,5 +1,6 @@
 package io.codetrail.codetrailintellij.story;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.Nullable;
 
 public class Story {
@@ -56,11 +57,13 @@ public class Story {
         this.title = title;
     }
 
-    public boolean isDraft() {
+    @JsonProperty("is_draft")
+    public boolean getIsDraft() {
         return isDraft;
     }
 
-    public void setDraft(boolean draft) {
+    @JsonProperty("is_draft")
+    public void setIsDraft(boolean draft) {
         isDraft = draft;
     }
 
@@ -72,27 +75,33 @@ public class Story {
         this.content = content;
     }
 
+    @JsonProperty("created_by")
     public String getCreatedBy() {
         return createdBy;
     }
 
+    @JsonProperty("created_by")
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
+    @JsonProperty("created_at")
 
     public String getCreatedAt() {
         return createdAt;
     }
+    @JsonProperty("created_at")
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
+    @JsonProperty("updated_at")
     @Nullable
     public String getUpdatedAt() {
         return updatedAt;
     }
 
+    @JsonProperty("updated_at")
     public void setUpdatedAt(@Nullable String updatedAt) {
         this.updatedAt = updatedAt;
     }

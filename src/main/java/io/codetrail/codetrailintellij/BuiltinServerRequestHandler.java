@@ -2,20 +2,15 @@ package io.codetrail.codetrailintellij;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.diagnostic.Logger;
-import io.codetrail.codetrailintellij.rpc.extension.RPCResponse;
+import io.codetrail.codetrailintellij.rpc.ide.DisplayRecordedAnnotationRequest;
 import io.codetrail.codetrailintellij.rpc.ide.RPCIDERequest;
-import io.codetrail.codetrailintellij.rpc.ide.RPCIDEResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.ide.BuiltInServerManager;
 import org.jetbrains.ide.RestService;
 
-import com.intellij.util.ui.JBUI;
-
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class BuiltinServerRequestHandler extends RestService {
@@ -30,7 +25,7 @@ public class BuiltinServerRequestHandler extends RestService {
     public String execute(@NotNull QueryStringDecoder urlDecoder, @NotNull FullHttpRequest request,
                           @NotNull ChannelHandlerContext context) throws IOException {
         // make sure we're only receiving JSON requests
-        if (!request.headers().get("Content-Type").equalsIgnoreCase("application/json")) {
+        if (!request.headers().get("Content-Type").startsWith("application/json")) {
             sendStatus(HttpResponseStatus.UNSUPPORTED_MEDIA_TYPE, false, context.channel());
             return null;
         }
@@ -39,17 +34,25 @@ public class BuiltinServerRequestHandler extends RestService {
         String body = request.content().toString(StandardCharsets.UTF_8);
         log.info("received request: " + body);
         ObjectMapper mapper = new ObjectMapper();
-        RPCIDERequest rpcRequest = mapper.readValue(body, RPCIDERequest.class);
 
-        if (rpcRequest == null) {
+        try {
+            RPCIDERequest rpcRequest = mapper.readValue(body, RPCIDERequest.class);
+
+            if (rpcRequest == null) {
+                sendStatus(HttpResponseStatus.BAD_REQUEST, false, context.channel());
+                return null;
+            }
+
+            if (handleRpcRequest(rpcRequest)) {
+                sendOk(request, context);
+            } else {
+                sendStatus(HttpResponseStatus.BAD_REQUEST, false, context.channel());
+            }
+        } catch (Exception e) {
+            log.error("could not parse request", e);
             sendStatus(HttpResponseStatus.BAD_REQUEST, false, context.channel());
-            return null;
         }
 
-        RPCIDEResponse response = handleRpcRequest(rpcRequest);
-        // todo: respond with generated response
-
-        sendOk(request, context);
         return null;
     }
 
@@ -59,22 +62,34 @@ public class BuiltinServerRequestHandler extends RestService {
         return "codetrail";
     }
 
-    private RPCIDEResponse handleRpcRequest(RPCIDERequest request) {
+    @Override
+    protected boolean isMethodSupported(@NotNull HttpMethod method) {
+        return true;
+    }
+
+    private boolean handleRpcRequest(RPCIDERequest request) {
         // todo: handle all possible requests
         switch (request.getAction()) {
             case "desktop_ping":
                 // happens when the IDE reconnects to make sure it is running, afterwards prepareStory is called
+                // we don't need to do anything, but we'll acknowledge the ping
+                break;
             case "prepareStory":
                 // happens when we want to play a story
+                break;
             case "displayRecordedAnnotation":
                 // happens when we've added an annotation in the desktop companion
+                DisplayRecordedAnnotationRequest annotationRequest = (DisplayRecordedAnnotationRequest) request;
+                ExtensionService service = ExtensionService.getInstance();
+                service.addAnnotation(annotationRequest.getPayload().getAnnotation());
+                break;
             case "refreshAnnotations":
                 // is not in use right now
-            default:
                 break;
+            default:
+                return false;
         }
 
-        // todo: actually make a response here
-        return new RPCIDEResponse();
+        return true;
     }
 }

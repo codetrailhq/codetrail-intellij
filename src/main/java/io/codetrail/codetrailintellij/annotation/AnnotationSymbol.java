@@ -9,6 +9,10 @@ public class AnnotationSymbol {
         setKind(kind);
     }
 
+    public AnnotationSymbol() {
+
+    }
+
     public String getName() {
         return name;
     }

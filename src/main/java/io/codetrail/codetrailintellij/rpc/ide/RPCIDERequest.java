@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "action")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = PrepareStoryRequest.class, name = "prepareStory")
+        @JsonSubTypes.Type(value = PrepareStoryRequest.class, name = "prepareStory"),
+        @JsonSubTypes.Type(value = DisplayRecordedAnnotationRequest.class, name = "displayRecordedAnnotation")
 })
 public abstract class RPCIDERequest {
     abstract public String getAction();

@@ -15,6 +15,10 @@ public class AnnotationTextSelection {
         this.endCharacter = endCharacter;
     }
 
+    public AnnotationTextSelection() {
+
+    }
+
     public String getCode() {
         return code;
     }
@@ -33,5 +37,25 @@ public class AnnotationTextSelection {
 
     public int getEndCharacter() {
         return endCharacter;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setStartLine(int startLine) {
+        this.startLine = startLine;
+    }
+
+    public void setStartCharacter(int startCharacter) {
+        this.startCharacter = startCharacter;
+    }
+
+    public void setEndLine(int endLine) {
+        this.endLine = endLine;
+    }
+
+    public void setEndCharacter(int endCharacter) {
+        this.endCharacter = endCharacter;
     }
 }
