@@ -4,10 +4,13 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import io.codetrail.codetrailintellij.annotation.Annotation;
 import io.codetrail.codetrailintellij.annotation.AnnotationLocation;
 import io.codetrail.codetrailintellij.annotation.AnnotationSelectedText;
+import io.codetrail.codetrailintellij.annotation.ui.EditorAnnotationManager;
 import io.codetrail.codetrailintellij.rpc.ConnectionConfiguration;
 import io.codetrail.codetrailintellij.rpc.extension.*;
 import org.jetbrains.ide.BuiltInServerManager;
@@ -30,6 +33,7 @@ public class ExtensionService {
     private static int IDE_PING_INTERVAL = 1000 * 5;
 
     private Project currentProject;
+    private EditorAnnotationManager annotationManager;
 
     private boolean isEditing = false;
 
@@ -41,12 +45,14 @@ public class ExtensionService {
         return instance;
     }
 
-    public void annotate(AnnotationLocation location, String codebasePath, AnnotationSelectedText selectedText) {
+    public void annotate(AnnotationLocation location, String codebasePath, AnnotationSelectedText selectedText, Editor editor) {
         if (!connectedToDesktop) {
             log.info("not connected to desktop companion");
             dialogWithWarning("Not connected to desktop companion", "Please start CodeTrail before writing an annotation!");
             return;
         }
+
+        annotationManager.donateEditor(editor);
 
         RPCRequest req = new AnnotateRequest(new AnnotateRequestPayload(sessionId, codebasePath, location, selectedText));
 
@@ -78,6 +84,16 @@ public class ExtensionService {
         }
 
         currentProject = project;
+        annotationManager = new EditorAnnotationManager(currentProject);
+    }
+
+    public void addAnnotation(Annotation annotation) {
+        if (!isEditing) {
+            log.info("not editing, ignoring annotation");
+            return;
+        }
+
+        annotationManager.displayRecordedAnnotation(annotation);
     }
 
     /**

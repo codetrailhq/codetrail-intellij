@@ -1,6 +1,7 @@
 package io.codetrail.codetrailintellij;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import io.codetrail.codetrailintellij.rpc.ide.DisplayRecordedAnnotationRequest;
 import io.codetrail.codetrailintellij.rpc.ide.RPCIDERequest;
@@ -43,11 +44,14 @@ public class BuiltinServerRequestHandler extends RestService {
                 return null;
             }
 
-            if (handleRpcRequest(rpcRequest)) {
+            ApplicationManager.getApplication().invokeLater(() -> handleRpcRequest(rpcRequest));
+            sendOk(request, context);
+
+            /*if (handleRpcRequest(rpcRequest)) {
                 sendOk(request, context);
             } else {
                 sendStatus(HttpResponseStatus.BAD_REQUEST, false, context.channel());
-            }
+            }*/
         } catch (Exception e) {
             log.error("could not parse request", e);
             sendStatus(HttpResponseStatus.BAD_REQUEST, false, context.channel());
