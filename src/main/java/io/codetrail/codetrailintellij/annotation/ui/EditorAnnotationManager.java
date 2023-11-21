@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
+import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -16,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditorAnnotationManager {
     private static final Logger log = Logger.getInstance(EditorAnnotationManager.class.getName());
@@ -28,12 +31,16 @@ public class EditorAnnotationManager {
     public void displayRecordedAnnotation(Annotation annotation) {
         Editor e = findEditorForAnnotation(annotation);
         if (e == null) {
-            log.error("Could not find editor for annotation");
+            log.error("could not find editor for newly recorded annotation");
             return;
         }
 
+        displayAnnotationInEditor(annotation, e);
+    }
+
+    private void displayAnnotationInEditor(Annotation annotation, Editor editor) {
         JComponent inlay = AnnotationInlayFactory.create(annotation);
-        EditorComponentInlaysManager inlaysManager = new EditorComponentInlaysManager((EditorImpl) e);
+        EditorComponentInlaysManager inlaysManager = new EditorComponentInlaysManager((EditorImpl) editor);
 
         if (annotation.getLocation() instanceof RangeAnnotationLocation) {
             RangeAnnotationLocation location = (RangeAnnotationLocation) annotation.getLocation();
