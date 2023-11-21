@@ -14,5 +14,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 public abstract class AnnotationLocation {
     abstract String getKind();
+    abstract public String getPath();
 }
 

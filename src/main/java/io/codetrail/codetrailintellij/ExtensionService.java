@@ -97,7 +97,8 @@ public class ExtensionService {
 
     private void connectToDesktop(String projectPath) {
         int port = BuiltInServerManager.getInstance().getPort();
-        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "intellij", port, projectPath));
+        String path = "/api_codetrail";
+        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "intellij", port, path, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
