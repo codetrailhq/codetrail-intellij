@@ -1,6 +1,6 @@
 package io.codetrail.codetrailintellij.story;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class Story {
     private String id;

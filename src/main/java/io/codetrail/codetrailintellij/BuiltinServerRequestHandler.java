@@ -63,9 +63,13 @@ public class BuiltinServerRequestHandler extends RestService {
         // todo: handle all possible requests
         switch (request.getAction()) {
             case "desktop_ping":
+                // happens when the IDE reconnects to make sure it is running, afterwards prepareStory is called
             case "prepareStory":
-            case "refreshAnnotations":
+                // happens when we want to play a story
             case "displayRecordedAnnotation":
+                // happens when we've added an annotation in the desktop companion
+            case "refreshAnnotations":
+                // is not in use right now
             default:
                 break;
         }

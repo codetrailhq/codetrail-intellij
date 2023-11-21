@@ -1,12 +1,16 @@
 package io.codetrail.codetrailintellij;
 
+import com.intellij.collaboration.ui.codereview.diff.EditorComponentInlaysManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.ex.EditorEx;
+import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiFile;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.ui.components.JBLabel;
 import io.codetrail.codetrailintellij.annotation.*;
 
 public class AnnotateAction extends AnAction {
