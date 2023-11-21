@@ -36,7 +36,7 @@ public class AnnotateAction extends AnAction {
             AnnotationSelectedText selectedText = getSelectedText(caret, file, editor.getDocument());
             String containingDirectory = file.getVirtualFile().getParent().getPath();
 
-            ExtensionService.getInstance().annotate(location, containingDirectory, selectedText, editor);
+            ExtensionService.getInstance().annotate(location, containingDirectory, selectedText);
         }
     }
 

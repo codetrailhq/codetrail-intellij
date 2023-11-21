@@ -45,14 +45,12 @@ public class ExtensionService {
         return instance;
     }
 
-    public void annotate(AnnotationLocation location, String codebasePath, AnnotationSelectedText selectedText, Editor editor) {
+    public void annotate(AnnotationLocation location, String codebasePath, AnnotationSelectedText selectedText) {
         if (!connectedToDesktop) {
             log.info("not connected to desktop companion");
             dialogWithWarning("Not connected to desktop companion", "Please start CodeTrail before writing an annotation!");
             return;
         }
-
-        annotationManager.donateEditor(editor);
 
         RPCRequest req = new AnnotateRequest(new AnnotateRequestPayload(sessionId, codebasePath, location, selectedText));
 
@@ -114,7 +112,7 @@ public class ExtensionService {
     private void connectToDesktop(String projectPath) {
         int port = BuiltInServerManager.getInstance().getPort();
         String path = "/api_codetrail";
-        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "intellij", port, path, projectPath));
+        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "intellij", "2023.11.2", port, path, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();

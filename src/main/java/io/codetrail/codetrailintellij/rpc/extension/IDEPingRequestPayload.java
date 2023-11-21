@@ -6,10 +6,12 @@ public class IDEPingRequestPayload {
     private int port;
     private String rpcPath;
     private String codebasePath;
+    private String version;
 
-    public IDEPingRequestPayload(String sessionId, String ide, int port, String rpcPath, String codebasePath) {
+    public IDEPingRequestPayload(String sessionId, String ide, String version, int port, String rpcPath, String codebasePath) {
         this.sessionId = sessionId;
         this.ide = ide;
+        this.version = version;
         this.port = port;
         this.rpcPath = rpcPath;
         this.codebasePath = codebasePath;
@@ -31,5 +33,9 @@ public class IDEPingRequestPayload {
 
     public String getCodebasePath() {
         return codebasePath;
+    }
+
+    public String getVersion() {
+        return version;
     }
 }
