@@ -120,7 +120,7 @@ public class EditorAnnotationManager {
         return null;
     }
 
-    private void clearAnnotations() {
+    public void clearAnnotations() {
         for (Inlay i : inlays.values()) {
             i.dispose();
         }

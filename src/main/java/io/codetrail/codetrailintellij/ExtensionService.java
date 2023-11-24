@@ -97,6 +97,11 @@ public class ExtensionService {
         annotationManager.displayRecordedAnnotation(annotation);
     }
 
+    public void reset() {
+        annotationManager.clearAnnotations();
+        isEditing = false;
+    }
+
     public void displayStory(IDEStory story) {
         if (!connectedToDesktop) {
             log.info("not connected to desktop companion");

@@ -9,7 +9,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = PrepareStoryRequest.class, name = "prepareStory"),
         @JsonSubTypes.Type(value = DisplayRecordedAnnotationRequest.class, name = "displayRecordedAnnotation"),
-        @JsonSubTypes.Type(value = DesktopPingRequest.class, name = "desktopPing")
+        @JsonSubTypes.Type(value = DesktopPingRequest.class, name = "desktopPing"),
+        @JsonSubTypes.Type(value = ResetRequest.class, name = "reset")
 })
 public abstract class RPCIDERequest {
     abstract public String getAction();

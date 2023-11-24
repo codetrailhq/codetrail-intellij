@@ -53,7 +53,7 @@ public class BuiltinServerRequestHandler extends RestService {
             // TODO Send a proper response
             ByteBuffer jsonResp = ByteBuffer.wrap("{\"status\": \"ok\"}".getBytes(StandardCharsets.UTF_8));
             ByteBuf content = Unpooled.wrappedBuffer(jsonResp);
-            HttpResponse resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.OK, content);
+            HttpResponse resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, content);
             sendResponse(request, context, resp);
 
             return null;
@@ -81,7 +81,7 @@ public class BuiltinServerRequestHandler extends RestService {
 
         // todo: handle all possible requests
         switch (request.getAction()) {
-            case "desktop_ping":
+            case "desktopPing":
                 // happens when the IDE reconnects to make sure it is running, afterwards prepareStory is called
                 // we don't need to do anything, but we'll acknowledge the ping
                 break;
@@ -95,8 +95,8 @@ public class BuiltinServerRequestHandler extends RestService {
                 DisplayRecordedAnnotationRequest annotationRequest = (DisplayRecordedAnnotationRequest) request;
                 service.addAnnotation(annotationRequest.getPayload().getAnnotation());
                 break;
-            case "refreshAnnotations":
-                // is not in use right now
+            case "reset":
+                service.reset();
                 break;
             default:
                 return false;
