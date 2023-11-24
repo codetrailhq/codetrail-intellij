@@ -13,7 +13,7 @@ public class IDEPingRequest extends RPCRequest {
 
     @Override
     public String getAction() {
-        return "ide_ping";
+        return "idePing";
     }
 
     @Override

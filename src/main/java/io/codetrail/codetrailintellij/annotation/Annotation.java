@@ -1,17 +1,13 @@
 package io.codetrail.codetrailintellij.annotation;
 
 public class Annotation {
-    private String repository;
-    private String gitRef;
     private AnnotationLocation location;
     private AnnotationSelectedText selectedText;
     private String content;
     private String id;
     private AnnotationGitInfo git;
 
-    public Annotation(String repository, String gitRef, AnnotationLocation location, AnnotationSelectedText selectedText, String content) {
-        this.repository = repository;
-        this.gitRef = gitRef;
+    public Annotation(AnnotationLocation location, AnnotationSelectedText selectedText, String content) {
         this.location = location;
         this.selectedText = selectedText;
         this.content = content;
@@ -21,13 +17,6 @@ public class Annotation {
 
     }
 
-    public String getRepository() {
-        return repository;
-    }
-
-    public String getGitRef() {
-        return gitRef;
-    }
 
     public AnnotationLocation getLocation() {
         return location;
@@ -39,14 +28,6 @@ public class Annotation {
 
     public String getContent() {
         return content;
-    }
-
-    public void setRepository(String repository) {
-        this.repository = repository;
-    }
-
-    public void setGitRef(String gitRef) {
-        this.gitRef = gitRef;
     }
 
     public void setLocation(AnnotationLocation location) {

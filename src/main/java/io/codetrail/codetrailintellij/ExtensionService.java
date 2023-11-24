@@ -4,7 +4,6 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import io.codetrail.codetrailintellij.annotation.Annotation;
@@ -18,6 +17,7 @@ import org.jetbrains.ide.BuiltInServerManager;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,6 +76,8 @@ public class ExtensionService {
     }
 
     public void activate(Project project, String projectPath) {
+        this.sessionId = generateSessionId();
+
         if (!connectedToDesktop) {
             log.info("not connected to desktop companion, trying to connect");
             connectToDesktop(projectPath);
@@ -131,23 +133,29 @@ public class ExtensionService {
     /**
      * We need to keep sending ide_ping to desktop companion to keep the connection alive.
      * FIXME: this needs to be more stable, the desktop companion could be quit at any time
+     *
      * @param projectPath
      */
     private void stayConnectedToDesktop(String projectPath) {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
-            @Override public void run() {
+            @Override
+            public void run() {
                 log.info("sending ide_ping to desktop companion");
                 connectToDesktop(projectPath);
             }
         }, IDE_PING_INTERVAL, IDE_PING_INTERVAL);
     }
 
+    private String generateSessionId() {
+        return UUID.randomUUID().toString();
+    }
+
     private void connectToDesktop(String projectPath) {
         int port = BuiltInServerManager.getInstance().getPort();
         String path = "/api_codetrail";
         // fixme: need to dynamically load version from package at one point in time
-        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "jetbrainsIntelliJUltimate", "2023.11.3", port, path, projectPath));
+        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload(sessionId, "jetbrainsIntelliJUltimate", "2023.11.3", port, path, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -170,8 +178,6 @@ public class ExtensionService {
                     continue;
                 }
 
-                String sessionId = resp.getData().getSessionId();
-                this.sessionId = sessionId;
                 this.connectedToDesktop = true;
                 log.info("connected to desktop companion!!!");
                 break;

@@ -9,6 +9,7 @@ import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
 import io.codetrail.codetrailintellij.annotation.Annotation;
 import io.codetrail.codetrailintellij.annotation.LineAnnotationLocation;
 import io.codetrail.codetrailintellij.annotation.RangeAnnotationLocation;
@@ -44,7 +45,7 @@ public class EditorAnnotationManager {
         clearAnnotations();
 
         List<Annotation> annotations = story.getFilteredAnnotations();
-        for (Annotation a: annotations) {
+        for (Annotation a : annotations) {
             // first check if we have an editor
             Editor existing = findEditorForAnnotation(a);
             if (existing != null) {
@@ -87,10 +88,17 @@ public class EditorAnnotationManager {
         String fullAnnotationPath = getFilePath(annotation);
 
         FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
-        FileEditor[] fileEditors = fileEditorManager.openFile(fileEditorManager.getProject().getBaseDir().findFileByRelativePath(fullAnnotationPath), true);
+
+        VirtualFile foundFile = fileEditorManager.getProject().getBaseDir().findFileByRelativePath(annotation.getLocation().getPath());
+        if (foundFile == null) {
+            log.error("could not find file for annotation");
+            return null;
+        }
+
+        FileEditor[] fileEditors = fileEditorManager.openFile(foundFile, true);
 
         Editor[] allEditors = EditorFactory.getInstance().getAllEditors();
-        for (Editor e: allEditors) {
+        for (Editor e : allEditors) {
             if (e.getVirtualFile().getCanonicalPath().contentEquals(fullAnnotationPath)) {
                 return e;
             }
@@ -103,7 +111,7 @@ public class EditorAnnotationManager {
         String fullAnnotationPath = getFilePath(annotation);
 
         Editor[] allEditors = EditorFactory.getInstance().getAllEditors();
-        for (Editor e: allEditors) {
+        for (Editor e : allEditors) {
             if (e.getVirtualFile().getCanonicalPath().contentEquals(fullAnnotationPath)) {
                 return e;
             }
@@ -113,7 +121,7 @@ public class EditorAnnotationManager {
     }
 
     private void clearAnnotations() {
-        for (Inlay i: inlays.values()) {
+        for (Inlay i : inlays.values()) {
             i.dispose();
         }
         inlays.clear();
