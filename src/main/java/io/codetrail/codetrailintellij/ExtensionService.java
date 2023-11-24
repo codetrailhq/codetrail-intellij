@@ -3,6 +3,7 @@ package io.codetrail.codetrailintellij;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.application.ApplicationInfo;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -15,6 +16,9 @@ import io.codetrail.codetrailintellij.rpc.extension.*;
 import io.codetrail.codetrailintellij.story.IDEStory;
 import org.jetbrains.ide.BuiltInServerManager;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
@@ -182,11 +186,40 @@ public class ExtensionService {
         return UUID.randomUUID().toString();
     }
 
+    private String getIDEName() {
+        String productName = ApplicationInfo.getInstance().getFullApplicationName();
+
+        if (productName.startsWith("IntelliJ IDEA")) {
+            return "jetbrainsIntelliJUltimate";
+        }
+
+        if (productName.startsWith("GoLand")) {
+            return "jetbrainsGoLand";
+        }
+
+        throw new RuntimeException("unknown ide name");
+    }
+
+    private String getVersion() {
+        // Read resources/version.properties
+        String version = "";
+        try {
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("version.properties");
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            version = properties.getProperty("version");
+        } catch (IOException e) {
+            log.warn("could not read version.properties");
+            log.warn(e);
+        }
+
+        return version;
+    }
+
     private void connectToDesktop(String projectPath) {
         int port = BuiltInServerManager.getInstance().getPort();
         String path = "/api_codetrail";
-        // fixme: need to dynamically load version from package at one point in time
-        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload(sessionId, "jetbrainsIntelliJUltimate", "2023.11.3", port, path, projectPath));
+        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload(sessionId, getIDEName(), getVersion(), port, path, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
