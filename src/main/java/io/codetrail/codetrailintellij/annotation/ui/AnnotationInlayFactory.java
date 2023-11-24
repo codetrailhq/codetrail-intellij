@@ -3,6 +3,7 @@ package io.codetrail.codetrailintellij.annotation.ui;
 import com.intellij.collaboration.ui.codereview.comment.RoundedPanel;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.UIUtil;
+import io.codetrail.codetrailintellij.ExtensionService;
 import io.codetrail.codetrailintellij.annotation.Annotation;
 
 import javax.swing.*;
@@ -33,6 +34,13 @@ public class AnnotationInlayFactory {
         inner.add(titleLabel, BorderLayout.NORTH);
         inner.add(contentLabel, BorderLayout.CENTER);
         inner.add(idLabel, BorderLayout.SOUTH);
+
+        JButton button = new JButton("Edit");
+        button.addActionListener(e -> {
+            ExtensionService.getInstance().dialogWithWarning("Not implemented", "Editing annotations is not yet implemented.");
+        });
+
+        component.add(button, BorderLayout.EAST);
 
         component.add(inner, BorderLayout.CENTER);
 

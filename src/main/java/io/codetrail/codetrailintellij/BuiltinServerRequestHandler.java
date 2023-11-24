@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import io.codetrail.codetrailintellij.rpc.ide.DisplayRecordedAnnotationRequest;
+import io.codetrail.codetrailintellij.rpc.ide.PrepareStoryRequest;
 import io.codetrail.codetrailintellij.rpc.ide.RPCIDERequest;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.ide.RestService;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public class BuiltinServerRequestHandler extends RestService {
@@ -45,13 +49,14 @@ public class BuiltinServerRequestHandler extends RestService {
             }
 
             ApplicationManager.getApplication().invokeLater(() -> handleRpcRequest(rpcRequest));
-            sendOk(request, context);
 
-            /*if (handleRpcRequest(rpcRequest)) {
-                sendOk(request, context);
-            } else {
-                sendStatus(HttpResponseStatus.BAD_REQUEST, false, context.channel());
-            }*/
+            // TODO Send a proper response
+            ByteBuffer jsonResp = ByteBuffer.wrap("{\"status\": \"ok\"}".getBytes(StandardCharsets.UTF_8));
+            ByteBuf content = Unpooled.wrappedBuffer(jsonResp);
+            HttpResponse resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.OK, content);
+            sendResponse(request, context, resp);
+
+            return null;
         } catch (Exception e) {
             log.error("could not parse request", e);
             sendStatus(HttpResponseStatus.BAD_REQUEST, false, context.channel());
@@ -72,6 +77,8 @@ public class BuiltinServerRequestHandler extends RestService {
     }
 
     private boolean handleRpcRequest(RPCIDERequest request) {
+        ExtensionService service = ExtensionService.getInstance();
+
         // todo: handle all possible requests
         switch (request.getAction()) {
             case "desktop_ping":
@@ -80,11 +87,12 @@ public class BuiltinServerRequestHandler extends RestService {
                 break;
             case "prepareStory":
                 // happens when we want to play a story
+                PrepareStoryRequest storyRequest = (PrepareStoryRequest) request;
+                service.displayStory(storyRequest.getPayload().getStory());
                 break;
             case "displayRecordedAnnotation":
                 // happens when we've added an annotation in the desktop companion
                 DisplayRecordedAnnotationRequest annotationRequest = (DisplayRecordedAnnotationRequest) request;
-                ExtensionService service = ExtensionService.getInstance();
                 service.addAnnotation(annotationRequest.getPayload().getAnnotation());
                 break;
             case "refreshAnnotations":

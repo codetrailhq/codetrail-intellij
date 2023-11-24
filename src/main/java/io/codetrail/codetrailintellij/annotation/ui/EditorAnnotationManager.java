@@ -13,6 +13,7 @@ import com.intellij.openapi.project.Project;
 import io.codetrail.codetrailintellij.annotation.Annotation;
 import io.codetrail.codetrailintellij.annotation.LineAnnotationLocation;
 import io.codetrail.codetrailintellij.annotation.RangeAnnotationLocation;
+import io.codetrail.codetrailintellij.story.IDEStory;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -38,6 +39,21 @@ public class EditorAnnotationManager {
         displayAnnotationInEditor(annotation, e);
     }
 
+    public void displayAnnotationsForStory(IDEStory story) {
+        List<Annotation> annotations = story.getFilteredAnnotations();
+        for (Annotation a: annotations) {
+            // first check if we have an editor
+            Editor existing = findEditorForAnnotation(a);
+            if (existing != null) {
+                displayAnnotationInEditor(a, existing);
+            } else {
+                // if not, create one
+                Editor newEditor = createEditorForAnnotation(a);
+                displayAnnotationInEditor(a, newEditor);
+            }
+        }
+    }
+
     private void displayAnnotationInEditor(Annotation annotation, Editor editor) {
         JComponent inlay = AnnotationInlayFactory.create(annotation);
         EditorComponentInlaysManager inlaysManager = new EditorComponentInlaysManager((EditorImpl) editor);
@@ -53,8 +69,12 @@ public class EditorAnnotationManager {
         }
     }
 
-    private Editor findEditorForAnnotation(Annotation annotation) {
-        String fullAnnotationPath = Paths.get(project.getBasePath(), annotation.getLocation().getPath()).toString();
+    private Editor createEditorForAnnotation(Annotation annotation) {
+        // we don't have an editor for this annotation yet, so we need to create one
+        String fullAnnotationPath = getFilePath(annotation);
+
+        FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+        FileEditor[] fileEditors = fileEditorManager.openFile(fileEditorManager.getProject().getBaseDir().findFileByRelativePath(fullAnnotationPath), true);
 
         Editor[] allEditors = EditorFactory.getInstance().getAllEditors();
         for (Editor e: allEditors) {
@@ -64,5 +84,22 @@ public class EditorAnnotationManager {
         }
 
         return null;
+    }
+
+    private Editor findEditorForAnnotation(Annotation annotation) {
+        String fullAnnotationPath = getFilePath(annotation);
+
+        Editor[] allEditors = EditorFactory.getInstance().getAllEditors();
+        for (Editor e: allEditors) {
+            if (e.getVirtualFile().getCanonicalPath().contentEquals(fullAnnotationPath)) {
+                return e;
+            }
+        }
+
+        return null;
+    }
+
+    private String getFilePath(Annotation annotation) {
+        return Paths.get(project.getBasePath(), annotation.getLocation().getPath()).toString();
     }
 }

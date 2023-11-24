@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "io.codetrail"
-version = "1.0-SNAPSHOT"
+version = "2023.11.3"
 
 repositories {
   mavenCentral()

@@ -13,6 +13,7 @@ import io.codetrail.codetrailintellij.annotation.AnnotationSelectedText;
 import io.codetrail.codetrailintellij.annotation.ui.EditorAnnotationManager;
 import io.codetrail.codetrailintellij.rpc.ConnectionConfiguration;
 import io.codetrail.codetrailintellij.rpc.extension.*;
+import io.codetrail.codetrailintellij.story.IDEStory;
 import org.jetbrains.ide.BuiltInServerManager;
 
 import java.util.Timer;
@@ -94,6 +95,16 @@ public class ExtensionService {
         annotationManager.displayRecordedAnnotation(annotation);
     }
 
+    public void displayStory(IDEStory story) {
+        if (!connectedToDesktop) {
+            log.info("not connected to desktop companion");
+            dialogWithWarning("Not connected to desktop companion", "Please start CodeTrail before playing a story!");
+            return;
+        }
+
+        annotationManager.displayAnnotationsForStory(story);
+    }
+
     /**
      * We need to keep sending ide_ping to desktop companion to keep the connection alive.
      * FIXME: this needs to be more stable, the desktop companion could be quit at any time
@@ -112,7 +123,8 @@ public class ExtensionService {
     private void connectToDesktop(String projectPath) {
         int port = BuiltInServerManager.getInstance().getPort();
         String path = "/api_codetrail";
-        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "intellij", "2023.11.2", port, path, projectPath));
+        // fixme: need to dynamically load version from package at one point in time
+        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "intellij", "2023.11.3", port, path, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -159,7 +171,7 @@ public class ExtensionService {
         }
     }
 
-    private void notifyWithWarning(String title, String message) {
+    public void notifyWithWarning(String title, String message) {
         Notification notification = new Notification("io.codetrail.codetrail-intellij",
                 title,
                 message,
@@ -167,7 +179,7 @@ public class ExtensionService {
         Notifications.Bus.notify(notification, currentProject);
     }
 
-    private void dialogWithWarning(String title, String message) {
+    public void dialogWithWarning(String title, String message) {
         Messages.showWarningDialog(currentProject, message, title);
     }
 }
