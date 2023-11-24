@@ -1,7 +1,6 @@
 package io.codetrail.codetrailintellij.annotation.ui;
 
 import com.intellij.collaboration.ui.codereview.diff.EditorComponentInlaysManager;
-import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.EditorFactory;
@@ -14,16 +13,17 @@ import io.codetrail.codetrailintellij.annotation.Annotation;
 import io.codetrail.codetrailintellij.annotation.LineAnnotationLocation;
 import io.codetrail.codetrailintellij.annotation.RangeAnnotationLocation;
 import io.codetrail.codetrailintellij.story.IDEStory;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class EditorAnnotationManager {
     private static final Logger log = Logger.getInstance(EditorAnnotationManager.class.getName());
     private Project project;
+
+    private Map<String, Inlay> inlays = new java.util.HashMap<>();
 
     public EditorAnnotationManager(Project project) {
         this.project = project;
@@ -40,6 +40,9 @@ public class EditorAnnotationManager {
     }
 
     public void displayAnnotationsForStory(IDEStory story) {
+        // first, remove all existing annotations
+        clearAnnotations();
+
         List<Annotation> annotations = story.getFilteredAnnotations();
         for (Annotation a: annotations) {
             // first check if we have an editor
@@ -60,13 +63,23 @@ public class EditorAnnotationManager {
 
         if (annotation.getLocation() instanceof RangeAnnotationLocation) {
             RangeAnnotationLocation location = (RangeAnnotationLocation) annotation.getLocation();
-            inlaysManager.insertAfter(location.getEndLine() - 1, inlay, 100, null);
+            addOrUpdateInlayAtPosition(location.getEndLine() - 1, inlay, annotation, inlaysManager);
         } else if (annotation.getLocation() instanceof LineAnnotationLocation) {
             LineAnnotationLocation location = (LineAnnotationLocation) annotation.getLocation();
-            inlaysManager.insertAfter(location.getLine() - 1, inlay, 100, null);
+            addOrUpdateInlayAtPosition(location.getLine() - 1, inlay, annotation, inlaysManager);
         } else {
             log.error("Unknown annotation location type");
         }
+    }
+
+    private void addOrUpdateInlayAtPosition(int line, JComponent inlay, Annotation annotation, EditorComponentInlaysManager manager) {
+        if (inlays.containsKey(annotation.getId())) {
+            inlays.get(annotation.getId()).dispose();
+            inlays.remove(annotation.getId());
+        }
+
+        Inlay i = manager.insertAfter(line, inlay, 100, null);
+        inlays.put(annotation.getId(), i);
     }
 
     private Editor createEditorForAnnotation(Annotation annotation) {
@@ -97,6 +110,13 @@ public class EditorAnnotationManager {
         }
 
         return null;
+    }
+
+    private void clearAnnotations() {
+        for (Inlay i: inlays.values()) {
+            i.dispose();
+        }
+        inlays.clear();
     }
 
     private String getFilePath(Annotation annotation) {

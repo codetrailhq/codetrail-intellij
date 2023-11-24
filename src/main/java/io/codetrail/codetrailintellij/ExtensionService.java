@@ -124,7 +124,7 @@ public class ExtensionService {
         int port = BuiltInServerManager.getInstance().getPort();
         String path = "/api_codetrail";
         // fixme: need to dynamically load version from package at one point in time
-        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "intellij", "2023.11.3", port, path, projectPath));
+        RPCRequest req = new IDEPingRequest(new IDEPingRequestPayload("my-own-session", "jetbrainsIntelliJUltimate", "2023.11.3", port, path, projectPath));
         log.info("connecting to desktop companion communicating ide port " + port + " and project path " + projectPath);
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
