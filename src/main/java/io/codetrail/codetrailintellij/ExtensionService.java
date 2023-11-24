@@ -138,6 +138,29 @@ public class ExtensionService {
         }
     }
 
+    public void deleteAnnotation(Annotation annotation) {
+        RPCRequest req = new DeleteAnnotationRequest(new DeleteAnnotationRequestPayload(sessionId, annotation.getId()));
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        RequestRunner runner = new RequestRunner(req, connection);
+        Future<DeleteAnnotationResponse> r = executorService.submit(runner);
+
+        isEditing = true;
+
+        try {
+            DeleteAnnotationResponse resp = r.get();
+
+            if (resp == null) {
+                log.warn("DeleteAnnotationResponse is null");
+            } else if (resp.getError() != null) {
+                log.warn("could not delete annotation due to error");
+            }
+        } catch (Exception e) {
+            log.warn("failed to delete annotation");
+            log.warn(e);
+        }
+    }
+
     /**
      * We need to keep sending ide_ping to desktop companion to keep the connection alive.
      * FIXME: this needs to be more stable, the desktop companion could be quit at any time

@@ -5,7 +5,6 @@ import com.intellij.ui.components.JBLabel;
 import com.intellij.util.ui.UIUtil;
 import io.codetrail.codetrailintellij.ExtensionService;
 import io.codetrail.codetrailintellij.annotation.Annotation;
-import org.jdesktop.swingx.StackLayout;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,11 +29,6 @@ public class AnnotationInlayFactory {
         inner.add(contentLabel, BorderLayout.CENTER);
         inner.add(idLabel, BorderLayout.SOUTH);
 
-        JButton button = new JButton("Edit");
-        button.addActionListener(e -> {
-            ExtensionService.getInstance().editAnnotation(annotation);
-        });
-
         BorderLayout topLayout = new BorderLayout();
         topLayout.setHgap(8);
         Panel topPanel = new Panel(topLayout);
@@ -46,7 +40,18 @@ public class AnnotationInlayFactory {
         topPanel.add(titleLabel, BorderLayout.LINE_START);
 
         Panel buttonPanel = new Panel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(button);
+
+        JButton editButton = new JButton("Edit");
+        editButton.addActionListener(e -> {
+            ExtensionService.getInstance().editAnnotation(annotation);
+        });
+        buttonPanel.add(editButton);
+
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(e -> {
+            ExtensionService.getInstance().deleteAnnotation(annotation);
+        });
+        buttonPanel.add(deleteButton);
 
         topPanel.add(buttonPanel, BorderLayout.LINE_END);
 
