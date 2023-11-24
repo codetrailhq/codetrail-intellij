@@ -6,14 +6,14 @@ public class AnnotationSelectedText {
     private AnnotationSnippet snippet;
     private AnnotationTextSelection selected;
 
-    private AnnotationSymbol symbol;
+    private AnnotationSymbol nearestSymbol;
 
     private String language;
 
-    public AnnotationSelectedText(AnnotationSnippet snippet, AnnotationTextSelection selected, AnnotationSymbol symbol, String language) {
+    public AnnotationSelectedText(AnnotationSnippet snippet, AnnotationTextSelection selected, AnnotationSymbol nearestSymbol, String language) {
         this.snippet = snippet;
         this.selected = selected;
-        this.symbol = symbol;
+        this.nearestSymbol = nearestSymbol;
     }
 
     public AnnotationSelectedText() {
@@ -29,8 +29,8 @@ public class AnnotationSelectedText {
     }
 
     @Nullable
-    public AnnotationSymbol getSymbol() {
-        return symbol;
+    public AnnotationSymbol getNearestSymbol() {
+        return nearestSymbol;
     }
 
     public String getLanguage() {
@@ -50,7 +50,7 @@ public class AnnotationSelectedText {
         this.selected = selected;
     }
 
-    public void setSymbol(AnnotationSymbol symbol) {
-        this.symbol = symbol;
+    public void setNearestSymbol(AnnotationSymbol nearestSymbol) {
+        this.nearestSymbol = nearestSymbol;
     }
 }

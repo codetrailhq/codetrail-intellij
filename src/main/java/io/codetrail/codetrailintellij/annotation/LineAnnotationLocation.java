@@ -9,6 +9,9 @@ public class LineAnnotationLocation extends AnnotationLocation {
         this.line = line;
     }
 
+    public LineAnnotationLocation() {
+    }
+
     public String getPath() {
         return path;
     }
