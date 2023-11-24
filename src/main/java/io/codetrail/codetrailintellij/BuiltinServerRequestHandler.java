@@ -6,6 +6,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import io.codetrail.codetrailintellij.rpc.ide.DisplayRecordedAnnotationRequest;
 import io.codetrail.codetrailintellij.rpc.ide.PrepareStoryRequest;
 import io.codetrail.codetrailintellij.rpc.ide.RPCIDERequest;
+import io.codetrail.codetrailintellij.rpc.ide.RemoveAnnotationRequest;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -97,6 +98,10 @@ public class BuiltinServerRequestHandler extends RestService {
                 break;
             case "reset":
                 service.reset();
+                break;
+            case "removeAnnotation":
+                RemoveAnnotationRequest removeAnnotationRequest = (RemoveAnnotationRequest) request;
+                service.removeAnnotation(removeAnnotationRequest.getPayload().getAnnotationId());
                 break;
             default:
                 return false;

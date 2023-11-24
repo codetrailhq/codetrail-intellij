@@ -127,6 +127,13 @@ public class EditorAnnotationManager {
         inlays.clear();
     }
 
+    public void clearAnnotation(String annotationId) {
+        if (inlays.containsKey(annotationId)) {
+            inlays.get(annotationId).dispose();
+            inlays.remove(annotationId);
+        }
+    }
+
     private String getFilePath(Annotation annotation) {
         return Paths.get(project.getBasePath(), annotation.getLocation().getPath()).toString();
     }

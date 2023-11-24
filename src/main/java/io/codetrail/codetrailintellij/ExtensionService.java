@@ -90,11 +90,14 @@ public class ExtensionService {
 
     public void addAnnotation(Annotation annotation) {
         if (!isEditing) {
-            log.info("not editing, ignoring annotation");
-            return;
+            isEditing = true;
         }
 
         annotationManager.displayRecordedAnnotation(annotation);
+    }
+
+    public void removeAnnotation(String annotationId) {
+        annotationManager.clearAnnotation(annotationId);
     }
 
     public void reset() {
