@@ -37,7 +37,7 @@ public class AnnotationInlayFactory {
 
         JButton button = new JButton("Edit");
         button.addActionListener(e -> {
-            ExtensionService.getInstance().dialogWithWarning("Not implemented", "Editing annotations is not yet implemented.");
+            ExtensionService.getInstance().editAnnotation(annotation);
         });
 
         component.add(button, BorderLayout.EAST);

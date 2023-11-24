@@ -25,6 +25,7 @@
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
   <extensions defaultExtensionNs="com.intellij">
     <httpRequestHandler implementation="io.codetrail.codetrailintellij.BuiltinServerRequestHandler" />
+    <statusBarWidgetFactory implementation="io.codetrail.codetrailintellij.ui.CodeTrailStatusBarWidgetFactory" />
   </extensions>
 
   <projectListeners>

@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "action")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = IDEPingRequest.class, name = "ide_ping"),
-        @JsonSubTypes.Type(value = AnnotateRequest.class, name = "annotate")
+        @JsonSubTypes.Type(value = AnnotateRequest.class, name = "annotate"),
+        @JsonSubTypes.Type(value = EditAnnotationRequest.class, name = "editAnnotation")
 })
 public abstract class RPCRequest {
 

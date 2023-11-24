@@ -105,6 +105,29 @@ public class ExtensionService {
         annotationManager.displayAnnotationsForStory(story);
     }
 
+    public void editAnnotation(Annotation annotation) {
+        RPCRequest req = new EditAnnotationRequest(new EditAnnotationRequestPayload(sessionId, annotation.getId()));
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        RequestRunner runner = new RequestRunner(req, connection);
+        Future<EditAnnotationResponse> r = executorService.submit(runner);
+
+        isEditing = true;
+
+        try {
+            EditAnnotationResponse resp = r.get();
+
+            if (resp == null) {
+                log.warn("EditAnnotationResponse is null");
+            } else if (resp.getError() != null) {
+                log.warn("could not edit annotation due to error");
+            }
+        } catch (Exception e) {
+            log.warn("failed to edit annotation");
+            log.warn(e);
+        }
+    }
+
     /**
      * We need to keep sending ide_ping to desktop companion to keep the connection alive.
      * FIXME: this needs to be more stable, the desktop companion could be quit at any time
