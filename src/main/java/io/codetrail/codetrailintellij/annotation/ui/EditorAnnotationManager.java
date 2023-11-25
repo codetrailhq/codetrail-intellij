@@ -2,9 +2,7 @@ package io.codetrail.codetrailintellij.annotation.ui;
 
 import com.intellij.collaboration.ui.codereview.diff.EditorComponentInlaysManager;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.EditorFactory;
-import com.intellij.openapi.editor.Inlay;
+import com.intellij.openapi.editor.*;
 import com.intellij.openapi.editor.impl.EditorImpl;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -25,6 +23,7 @@ public class EditorAnnotationManager {
     private Project project;
 
     private Map<String, Inlay> inlays = new java.util.HashMap<>();
+    private IDEStory currentStory;
 
     public EditorAnnotationManager(Project project) {
         this.project = project;
@@ -46,15 +45,23 @@ public class EditorAnnotationManager {
 
         List<Annotation> annotations = story.getFilteredAnnotations();
         for (Annotation a : annotations) {
-            // first check if we have an editor
-            Editor existing = findEditorForAnnotation(a);
-            if (existing != null) {
-                displayAnnotationInEditor(a, existing);
-            } else {
-                // if not, create one
-                Editor newEditor = createEditorForAnnotation(a);
-                displayAnnotationInEditor(a, newEditor);
-            }
+            displayAnnotationInExistingOrNewEditor(a);
+        }
+
+        currentStory = story;
+    }
+
+    private Editor displayAnnotationInExistingOrNewEditor(Annotation a) {
+        // first check if we have an editor
+        Editor existing = findEditorForAnnotation(a);
+        if (existing != null) {
+            displayAnnotationInEditor(a, existing);
+            return existing;
+        } else {
+            // if not, create one
+            Editor newEditor = createEditorForAnnotation(a);
+            displayAnnotationInEditor(a, newEditor);
+            return newEditor;
         }
     }
 
@@ -136,5 +143,59 @@ public class EditorAnnotationManager {
 
     private String getFilePath(Annotation annotation) {
         return Paths.get(project.getBasePath(), annotation.getLocation().getPath()).toString();
+    }
+
+    public void displayNextAnnotation(Annotation viewedAnnotation) {
+        displayAnnotationAtOffset(viewedAnnotation, 1);
+    }
+
+    public void displayPreviousAnnotation(Annotation viewedAnnotation) {
+        displayAnnotationAtOffset(viewedAnnotation, -1);
+    }
+
+    private void displayAnnotationAtOffset(Annotation annotation, int offset) {
+        if (currentStory == null) {
+            return;
+        }
+
+        // first, find the index in the filteredSequence of the currently viewed annotation
+        int index = currentStory.getFilteredSequence().indexOf(annotation.getId());
+        if (index == -1) {
+            return;
+        }
+
+        // then, find the annotation in the filteredSequence at the given offset
+        if (index + offset >= 0 && index + offset < currentStory.getFilteredSequence().size()) {
+            String nextAnnotationId = currentStory.getFilteredSequence().get(index + offset);
+            Annotation nextAnnotation = currentStory.getFilteredAnnotations().stream().filter((a) -> a.getId().contentEquals(nextAnnotationId)).findFirst().orElse(null);
+            if (nextAnnotation != null) {
+                Editor e = findEditorForAnnotation(nextAnnotation);
+                if (e == null) {
+                    // fixme: if there are multiple annotations in a file, it only creates the next one
+                    e = displayAnnotationInExistingOrNewEditor(nextAnnotation);
+                }
+
+                jumpToAnnotation(nextAnnotation, e);
+            }
+        }
+    }
+
+    private void jumpToAnnotation(Annotation nextAnnotation, Editor e) {
+        FileEditorManager.getInstance(project).openFile(e.getVirtualFile(), true, true);
+
+        if (nextAnnotation.getLocation() instanceof RangeAnnotationLocation) {
+            RangeAnnotationLocation location = (RangeAnnotationLocation) nextAnnotation.getLocation();
+            e.getCaretModel().moveToLogicalPosition(new com.intellij.openapi.editor.LogicalPosition(location.getEndLine() - 1, 0));
+        } else if (nextAnnotation.getLocation() instanceof LineAnnotationLocation) {
+            LineAnnotationLocation location = (LineAnnotationLocation) nextAnnotation.getLocation();
+            e.getCaretModel().moveToLogicalPosition(new com.intellij.openapi.editor.LogicalPosition(location.getLine() - 1, 0));
+        } else {
+            log.error("Unknown annotation location type");
+        }
+
+        ScrollingModel scrollingModel = e.getScrollingModel();
+        scrollingModel.scrollToCaret(ScrollType.CENTER);
+
+        e.getComponent().requestFocus();
     }
 }

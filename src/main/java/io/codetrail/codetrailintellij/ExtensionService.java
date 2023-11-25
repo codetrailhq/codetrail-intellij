@@ -275,4 +275,12 @@ public class ExtensionService {
     public void dialogWithWarning(String title, String message) {
         Messages.showWarningDialog(currentProject, message, title);
     }
+
+    public void nextAnnotation(Annotation viewedAnnotation) {
+        annotationManager.displayNextAnnotation(viewedAnnotation);
+    }
+
+    public void previousAnnotation(Annotation annotation) {
+        annotationManager.displayPreviousAnnotation(annotation);
+    }
 }

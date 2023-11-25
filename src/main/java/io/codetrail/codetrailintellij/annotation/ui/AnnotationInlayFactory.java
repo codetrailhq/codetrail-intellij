@@ -21,13 +21,20 @@ public class AnnotationInlayFactory {
         contentLabel.setOpaque(false);
         contentLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
 
-        JBLabel idLabel = new JBLabel(annotation.getId());
-        idLabel.setOpaque(false);
-        idLabel.setForeground(UIUtil.getContextHelpForeground());
-        idLabel.setFont(idLabel.getFont().deriveFont(10.0f));
+        Panel navigationButtons = new Panel(new FlowLayout(FlowLayout.RIGHT));
+        JButton nextButton = new JButton("Next");
+        nextButton.addActionListener(e -> {
+            ExtensionService.getInstance().nextAnnotation(annotation);
+        });
+        JButton previousButton = new JButton("Previous");
+        previousButton.addActionListener(e -> {
+            ExtensionService.getInstance().previousAnnotation(annotation);
+        });
+
+        navigationButtons.add(previousButton);
+        navigationButtons.add(nextButton);
 
         inner.add(contentLabel, BorderLayout.CENTER);
-        inner.add(idLabel, BorderLayout.SOUTH);
 
         BorderLayout topLayout = new BorderLayout();
         topLayout.setHgap(8);
@@ -57,6 +64,7 @@ public class AnnotationInlayFactory {
 
         component.add(topPanel, BorderLayout.NORTH);
         component.add(inner, BorderLayout.CENTER);
+        component.add(navigationButtons, BorderLayout.SOUTH);
 
         return component;
     }
