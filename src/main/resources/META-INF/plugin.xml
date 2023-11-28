@@ -1,45 +1,47 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-  <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-  <id>io.codetrail.codetrail-intellij</id>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>io.codetrail.codetrail-intellij</id>
 
-  <!-- Public plugin name should be written in Title Case.
-       Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-  <name>CodeTrail</name>
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>CodeTrail</name>
 
-  <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-  <vendor email="contact@codetrail.io" url="https://codetrail.io">CodeTrail</vendor>
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="contact@codetrail.io" url="https://codetrail.io">CodeTrail</vendor>
 
-  <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-       Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
-       Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-  <description><![CDATA[
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
     CodeTrail helps you and your team document your code.
   ]]></description>
 
-  <!-- Product and plugin compatibility requirements.
-       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-  <depends>com.intellij.modules.platform</depends>
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
 
-  <!-- Extension points defined by the plugin.
-       Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
-  <extensions defaultExtensionNs="com.intellij">
-    <httpRequestHandler implementation="io.codetrail.codetrailintellij.BuiltinServerRequestHandler" />
-    <statusBarWidgetFactory implementation="io.codetrail.codetrailintellij.ui.CodeTrailStatusBarWidgetFactory" />
-  </extensions>
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <httpRequestHandler implementation="io.codetrail.codetrailintellij.BuiltinServerRequestHandler"/>
+        <statusBarWidgetFactory id="io.codetrail.codetrail-intellij.widget"
+                                implementation="io.codetrail.codetrailintellij.ui.CodeTrailStatusBarWidgetFactory"/>
+    </extensions>
 
-  <projectListeners>
-    <listener class="io.codetrail.codetrailintellij.ProjectManagerListener" topic="com.intellij.openapi.project.ProjectManagerListener" />
-  </projectListeners>
+    <projectListeners>
+        <listener class="io.codetrail.codetrailintellij.ProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </projectListeners>
 
-  <actions>
-    <action
-            id="CodeTrail.Annotate"
-            class="io.codetrail.codetrailintellij.AnnotateAction"
-            text="Annotate..."
-            description="Add a new annotation with CodeTrail">
-      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
-      <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift a"/>
-    </action>
-  </actions>
+    <actions>
+        <action
+                id="CodeTrail.Annotate"
+                class="io.codetrail.codetrailintellij.AnnotateAction"
+                text="Annotate..."
+                description="Add a new annotation with CodeTrail">
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift a"/>
+        </action>
+    </actions>
 </idea-plugin>
